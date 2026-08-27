@@ -1,0 +1,47 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+*.egg
+dist/
+build/
+*.whl
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# pytest
+.pytest_cache/
+.coverage
+htmlcov/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+__MACOSX/
+
+# splitaudio output (generated files)
+test/source/output/
+test/output/
+output/
+
+# Conversation logs (not part of the tool)
+*会话窗口.md
+
+# Screenshots
+*.png
+
+# Temporary files
+*.tmp
+*.bak

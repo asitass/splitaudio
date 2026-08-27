@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "splitaudio"
+version = "1.0.0"
+description = "Split audio files: extract covers, lyrics, wav, speed variants, and detect chorus/verse sections"
+requires-python = ">=3.10"
+dependencies = [
+    "numpy>=1.24",
+    "python-docx>=1.0",
+]
+
+[project.optional-dependencies]
+fallback = ["imageio-ffmpeg>=0.4.9"]
+
+[project.scripts]
+splitaudio = "splitaudio.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]

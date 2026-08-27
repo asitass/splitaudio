@@ -1,0 +1,113 @@
+name: Cross-Platform Test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  unit-tests:
+    name: Unit Tests (Python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.10", "3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: pip install -e .
+      - name: Run unit tests
+        run: python -m pytest tests/test_naming.py tests/test_lyrics.py tests/test_analysis.py -v
+
+  integration-tests:
+    name: Integration (${{ matrix.os }}, Python ${{ matrix.python-version }})
+    needs: unit-tests
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python-version: ["3.10", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install ffmpeg (Ubuntu)
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg
+
+      - name: Install ffmpeg (Windows)
+        if: runner.os == 'Windows'
+        run: winget install --id Gyan.FFmpeg -e --accept-source-agreements --accept-package-agreements
+        shell: pwsh
+
+      - name: Install ffmpeg (macOS)
+        if: runner.os == 'macOS'
+        run: brew install ffmpeg
+
+      - name: Install splitaudio
+        run: pip install -e .
+
+      - name: Verify ffmpeg
+        run: ffmpeg -version
+
+      - name: Verify CLI
+        run: splitaudio --version
+
+      - name: Run splitaudio on test files
+        run: splitaudio test/source --output test/output
+
+      - name: Verify output structure (Unix)
+        if: runner.os != 'Windows'
+        run: |
+          echo "=== Checking output files ==="
+          for name in "Out of Nowhere" "我想大概是你变了" "青春是我们写不完的旧书"; do
+            test -f "test/output/cover/${name}.png" && echo "OK: cover/${name}.png" || echo "MISSING: cover/${name}.png"
+            test -f "test/output/audio/wav/${name}.wav" && echo "OK: audio/wav/${name}.wav" || echo "MISSING: audio/wav/${name}.wav"
+            test -f "test/output/audio/speed/${name}_0.8x.mp3" && echo "OK: audio/speed/${name}_0.8x.mp3" || echo "MISSING: audio/speed/${name}_0.8x.mp3"
+            test -f "test/output/audio/speed/${name}_1.2x.mp3" && echo "OK: audio/speed/${name}_1.2x.mp3" || echo "MISSING: audio/speed/${name}_1.2x.mp3"
+            test -f "test/output/audio/original/${name}.mp3" && echo "OK: audio/original/${name}.mp3" || echo "MISSING: audio/original/${name}.mp3"
+            test -f "test/output/audio/verse/${name}_verse.mp3" && echo "OK: audio/verse/${name}_verse.mp3" || echo "MISSING: audio/verse/${name}_verse.mp3"
+            test -f "test/output/audio/chorus/${name}_chorus.mp3" && echo "OK: audio/chorus/${name}_chorus.mp3" || echo "MISSING: audio/chorus/${name}_chorus.mp3"
+            test -f "test/output/lyrics/${name}.docx" && echo "OK: lyrics/${name}.docx" || echo "MISSING: lyrics/${name}.docx"
+          done
+
+      - name: Verify output structure (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $names = @("Out of Nowhere", "我想大概是你变了", "青春是我们写不完的旧书")
+          foreach ($name in $names) {
+            $checks = @(
+              "test/output/cover/$name.png",
+              "test/output/audio/wav/$name.wav",
+              "test/output/audio/speed/${name}_0.8x.mp3",
+              "test/output/audio/speed/${name}_1.2x.mp3",
+              "test/output/audio/original/$name.mp3",
+              "test/output/audio/verse/${name}_verse.mp3",
+              "test/output/audio/chorus/${name}_chorus.mp3",
+              "test/output/lyrics/$name.docx"
+            )
+            foreach ($f in $checks) {
+              if (Test-Path $f) { Write-Host "OK: $f" } else { Write-Host "MISSING: $f" }
+            }
+          }
+
+      - name: Run integration tests
+        run: python -m pytest tests/test_integration.py -m integration -v
+
+      - name: Idempotency check
+        if: runner.os != 'Windows'
+        run: |
+          splitaudio test/source --output test/output
+          echo "Second run completed successfully"
