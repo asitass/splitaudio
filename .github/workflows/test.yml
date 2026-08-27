@@ -22,7 +22,9 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Install dependencies
         working-directory: splitaudio
-        run: pip install -e .
+        run: |
+          pip install -e .
+          pip install pytest
       - name: Run unit tests
         working-directory: splitaudio
         run: python -m pytest tests/test_naming.py tests/test_lyrics.py tests/test_analysis.py -v
@@ -59,7 +61,9 @@ jobs:
 
       - name: Install splitaudio
         working-directory: splitaudio
-        run: pip install -e .
+        run: |
+          pip install -e .
+          pip install pytest
 
       - name: Verify ffmpeg
         run: ffmpeg -version
