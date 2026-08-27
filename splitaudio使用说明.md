@@ -2,8 +2,6 @@
 
 音频分段工具：从 MP3 文件中提取封面、生成 WAV/变速 MP3、检测副歌/主歌并裁剪、生成歌词 DOCX 文档。
 
-[![Cross-Platform Test](https://github.com/asitass/splitaudio/actions/workflows/test.yml/badge.svg)](https://github.com/asitass/splitaudio/actions/workflows/test.yml)
-
 ## 功能
 
 - **题1（普通难度）**：封面 PNG + 48kHz 24bit WAV + 0.8x/1.2x 变速 MP3 + 歌词 DOCX
@@ -72,8 +70,7 @@ sudo dnf install --enablerepo=rpmfusion-free-release ffmpeg
 ### 2. 安装 splitaudio
 
 ```bash
-# 克隆项目
-git clone https://github.com/asitass/splitaudio.git
+
 cd splitaudio
 
 # 安装（推荐 editable 模式）
@@ -181,8 +178,6 @@ output/
 | Ubuntu 24.04 (Linux) | 3.10, 3.12 | ✅ |
 | Windows Server 2022 | 3.10, 3.12 | ✅ |
 | macOS (Apple Silicon) | 3.10, 3.12 | ✅ |
-
-CI 使用 GitHub Actions 矩阵构建，每次 push 自动在三平台运行完整测试。
 
 ## CLI 功能完整列表
 
