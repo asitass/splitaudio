@@ -21,8 +21,10 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install dependencies
+        working-directory: splitaudio
         run: pip install -e .
       - name: Run unit tests
+        working-directory: splitaudio
         run: python -m pytest tests/test_naming.py tests/test_lyrics.py tests/test_analysis.py -v
 
   integration-tests:
@@ -56,6 +58,7 @@ jobs:
         run: brew install ffmpeg
 
       - name: Install splitaudio
+        working-directory: splitaudio
         run: pip install -e .
 
       - name: Verify ffmpeg
@@ -104,6 +107,7 @@ jobs:
           }
 
       - name: Run integration tests
+        working-directory: splitaudio
         run: python -m pytest tests/test_integration.py -m integration -v
 
       - name: Idempotency check
