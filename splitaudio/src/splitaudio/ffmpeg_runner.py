@@ -13,6 +13,7 @@ from splitaudio.errors import FFmpegNotFoundError
 log = logging.getLogger(__name__)
 
 COMMON_PREFIX = ["-y", "-nostdin", "-hide_banner", "-loglevel", "error"]
+FFPROBE_PREFIX = ["-nostdin", "-hide_banner", "-loglevel", "error"]
 
 
 @dataclass(frozen=True)

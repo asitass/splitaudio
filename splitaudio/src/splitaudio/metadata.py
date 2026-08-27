@@ -9,7 +9,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Mapping
 
-from splitaudio.ffmpeg_runner import Tools, run, run_stderr, COMMON_PREFIX
+from splitaudio.ffmpeg_runner import Tools, run, run_stderr, COMMON_PREFIX, FFPROBE_PREFIX
 from splitaudio.errors import ProbeError
 
 log = logging.getLogger(__name__)
@@ -49,7 +49,7 @@ def probe(path: Path, tools: Tools) -> TrackMeta:
 def _probe_ffprobe(path: Path, tools: Tools) -> TrackMeta:
     cmd = [
         tools.ffprobe,
-        *COMMON_PREFIX,
+        *FFPROBE_PREFIX,
         "-show_streams",
         "-show_format",
         "-of", "json",
