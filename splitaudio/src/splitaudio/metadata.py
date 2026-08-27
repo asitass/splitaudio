@@ -59,14 +59,7 @@ def _probe_ffprobe(path: Path, tools: Tools) -> TrackMeta:
     try:
         raw = run(cmd)
     except Exception as e:
-        import subprocess
-        # Re-run to capture stderr for debugging
-        try:
-            result = subprocess.run(cmd, capture_output=True, text=True, timeout=300)
-            stderr_msg = result.stderr[:500] if result.stderr else "(no stderr)"
-        except Exception:
-            stderr_msg = "(could not re-run)"
-        raise ProbeError(f"ffprobe 探测失败: {path}: {e}\nstderr: {stderr_msg}") from e
+        raise ProbeError(f"ffprobe 探测失败: {path}: {e}") from e
 
     data = json.loads(raw)
     fmt = data.get("format", {})
