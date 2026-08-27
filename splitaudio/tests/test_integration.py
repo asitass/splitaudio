@@ -19,7 +19,11 @@ def require_source():
 
 def _run_splitaudio(*args, **kwargs) -> subprocess.CompletedProcess:
     venv_python = Path(__file__).parent.parent / ".venv" / "bin" / "python"
-    cmd = [str(venv_python), "-m", "splitaudio", *args]
+    if venv_python.exists():
+        python = str(venv_python)
+    else:
+        python = sys.executable
+    cmd = [python, "-m", "splitaudio", *args]
     return subprocess.run(cmd, capture_output=True, text=True, timeout=300, **kwargs)
 
 

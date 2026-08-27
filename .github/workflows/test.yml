@@ -52,7 +52,15 @@ jobs:
 
       - name: Install ffmpeg (Windows)
         if: runner.os == 'Windows'
-        run: winget install --id Gyan.FFmpeg -e --accept-source-agreements --accept-package-agreements
+        run: |
+          choco install ffmpeg -y
+          echo "C:\ProgramData\chocolatey\bin" >> $env:GITHUB_PATH
+        shell: pwsh
+
+      - name: Refresh PATH (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
         shell: pwsh
 
       - name: Install ffmpeg (macOS)
